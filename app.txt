@@ -1,0 +1,192 @@
+/* Simple product data - replace with your catalog or fetch from an API */
+const PRODUCTS = [
+  {
+    id: "p1",
+    title: "Linen Throw Pillow — Sand",
+    price: 49.00,
+    img: "https://picsum.photos/seed/p1/600/400",
+    desc: "Soft linen throw pillow with understated texture. 18\" x 18\". Ethically sourced."
+  },
+  {
+    id: "p2",
+    title: "Ceramic Table Vase — Olive",
+    price: 68.00,
+    img: "https://picsum.photos/seed/p2/600/400",
+    desc: "Hand-glazed ceramic vase with matte finish. Small imperfections are part of the charm."
+  },
+  {
+    id: "p3",
+    title: "Woven Wall Hanging — Rustic",
+    price: 88.00,
+    img: "https://picsum.photos/seed/p3/600/400",
+    desc: "Handwoven wall piece that adds warmth to any gallery wall."
+  },
+  {
+    id: "p4",
+    title: "Minimal Table Lamp — Brass",
+    price: 129.00,
+    img: "https://picsum.photos/seed/p4/600/400",
+    desc: "Soft ambient lamp with textured linen shade."
+  }
+];
+
+/* App state */
+let cart = {}; // {id: qty}
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("year").textContent = new Date().getFullYear();
+  renderProducts();
+  setupCartButtons();
+  setupContactForm();
+});
+
+/* Render product grid */
+function renderProducts(){
+  const grid = document.getElementById("product-grid");
+  grid.innerHTML = PRODUCTS.map(p => `
+    <div class="card" data-id="${p.id}">
+      <img src="${p.img}" alt="${p.title}" loading="lazy"/>
+      <div class="card-body">
+        <div class="title">${p.title}</div>
+        <div class="price">$${p.price.toFixed(2)}</div>
+        <div class="desc small">${p.desc}</div>
+        <div class="actions">
+          <button class="btn-secondary view-btn" data-id="${p.id}">View</button>
+          <button class="btn-primary add-btn" data-id="${p.id}">Add to cart</button>
+        </div>
+      </div>
+    </div>
+  `).join("");
+
+  // Attach handlers
+  document.querySelectorAll(".add-btn").forEach(b => b.addEventListener("click", e => {
+    const id = e.currentTarget.dataset.id; addToCart(id);
+  }));
+  document.querySelectorAll(".view-btn").forEach(b => b.addEventListener("click", e => {
+    const id = e.currentTarget.dataset.id; openProductModal(id);
+  }));
+}
+
+/* Cart logic */
+function addToCart(id, qty = 1){
+  cart[id] = (cart[id] || 0) + qty;
+  updateCartUI();
+}
+
+function removeFromCart(id){
+  delete cart[id];
+  updateCartUI();
+}
+
+function changeQty(id, qty){
+  if (qty <= 0) removeFromCart(id);
+  else cart[id] = qty;
+  updateCartUI();
+}
+
+function updateCartUI(){
+  const count = Object.values(cart).reduce((s,n)=>s+n,0);
+  document.getElementById("cart-count").textContent = count;
+  const itemsEl = document.getElementById("cart-items");
+  itemsEl.innerHTML = "";
+  let subtotal = 0;
+  for (const id of Object.keys(cart)){
+    const product = PRODUCTS.find(p=>p.id===id);
+    const qty = cart[id];
+    subtotal += product.price * qty;
+    const row = document.createElement("div");
+    row.className = "cart-item";
+    row.innerHTML = `
+      <img src="${product.img}" alt="${product.title}" />
+      <div style="flex:1">
+        <div style="font-weight:600">${product.title}</div>
+        <div style="color:var(--muted)">$${product.price.toFixed(2)} • <span class="small">Qty</span>
+          <span class="qty">
+            <button data-id="${id}" class="dec">−</button>
+            <strong>${qty}</strong>
+            <button data-id="${id}" class="inc">+</button>
+          </span>
+        </div>
+      </div>
+      <div style="margin-left:8px; font-weight:700">$${(product.price*qty).toFixed(2)}</div>
+    `;
+    itemsEl.appendChild(row);
+  }
+  document.getElementById("cart-subtotal").textContent = `$${subtotal.toFixed(2)}`;
+
+  // inc/dec handlers
+  itemsEl.querySelectorAll(".dec").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.dataset.id;
+      changeQty(id, (cart[id]||1) - 1);
+    });
+  });
+  itemsEl.querySelectorAll(".inc").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.dataset.id;
+      changeQty(id, (cart[id]||0) + 1);
+    });
+  });
+}
+
+/* Cart drawer toggles */
+function setupCartButtons(){
+  const drawer = document.getElementById("cart-drawer");
+  document.getElementById("cart-toggle").addEventListener("click", () => {
+    drawer.classList.toggle("open");
+  });
+  document.getElementById("cart-close").addEventListener("click", () => drawer.classList.remove("open"));
+  document.getElementById("checkout-btn").addEventListener("click", demoCheckout);
+}
+
+/* Demo checkout */
+function demoCheckout(){
+  if (Object.keys(cart).length === 0){ alert("Your cart is empty."); return; }
+  // For real: call your backend to create a Stripe Checkout session OR redirect to Shopify checkout.
+  alert("Demo checkout — integrate Stripe Checkout or redirect to Shopify here.");
+}
+
+/* Modal product view */
+function openProductModal(id){
+  const p = PRODUCTS.find(x=>x.id===id);
+  const modal = document.getElementById("product-modal");
+  const content = document.getElementById("modal-content");
+  content.innerHTML = `
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px">
+      <div><img src="${p.img}" alt="${p.title}" style="width:100%; border-radius:8px"></div>
+      <div>
+        <h2 style="margin-top:0">${p.title}</h2>
+        <div style="color:var(--accent); font-weight:700; margin-bottom:8px">$${p.price.toFixed(2)}</div>
+        <p style="color:var(--muted)">${p.desc}</p>
+        <div style="margin-top:18px; display:flex; gap:8px">
+          <button class="btn-primary" id="modal-add">Add to cart</button>
+          <button class="btn-secondary" id="modal-close-action">Close</button>
+        </div>
+      </div>
+    </div>
+  `;
+  modal.classList.add("open");
+  modal.setAttribute("aria-hidden","false");
+  document.getElementById("modal-close").onclick = closeModal;
+  document.getElementById("modal-close-action").onclick = closeModal;
+  document.getElementById("modal-add").onclick = () => {
+    addToCart(id);
+    closeModal();
+    document.getElementById("cart-drawer").classList.add("open");
+  };
+}
+function closeModal(){
+  const modal = document.getElementById("product-modal");
+  modal.classList.remove("open");
+  modal.setAttribute("aria-hidden","true");
+}
+
+/* Contact form simple handler (demo) */
+function setupContactForm(){
+  const form = document.getElementById("contact-form");
+  form.addEventListener("submit", e => {
+    e.preventDefault();
+    alert("Thanks — we'll get back to you soon!");
+    form.reset();
+  });
+}

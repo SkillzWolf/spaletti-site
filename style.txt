@@ -1,0 +1,94 @@
+:root{
+  --bg:#f7f3ef;
+  --cream:#fbf8f5;
+  --accent:#8a5a38; /* warm brown */
+  --muted:#8b8b8b;
+  --max-width:1200px;
+  --radius:10px;
+  --shadow: 0 6px 18px rgba(20,20,20,0.06);
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background:var(--bg);
+  color:#222;
+  -webkit-font-smoothing:antialiased;
+}
+
+.container{
+  max-width:var(--max-width);
+  margin:0 auto;
+  padding:0 20px;
+}
+
+/* Header */
+.site-header{
+  background:linear-gradient(180deg, rgba(255,255,255,0.9), transparent);
+  position:sticky; top:0; z-index:50;
+  backdrop-filter: blur(6px);
+}
+.header-inner{
+  display:flex; align-items:center; justify-content:space-between; padding:18px 0;
+}
+.brand{display:flex; align-items:center; gap:12px}
+.logo-mark{
+  width:46px; height:46px; border-radius:10px; background:var(--cream); display:flex; align-items:center; justify-content:center; font-family: 'Allura', cursive; color:var(--accent); font-size:28px;
+  box-shadow:var(--shadow);
+}
+.brand-name{font-family: 'Playfair Display', serif; font-size:20px; color:var(--accent)}
+.brand-tag{font-size:12px; color:var(--muted)}
+
+/* Nav */
+.nav{display:flex; gap:14px; align-items:center}
+.nav a{color:#444; text-decoration:none; font-weight:500}
+.cart-btn{background:transparent; border:1px solid #eee; padding:8px 12px; border-radius:8px; cursor:pointer}
+
+/* Hero */
+.hero{padding:56px 0}
+.hero-inner{display:grid; grid-template-columns:1fr 1fr; gap:28px; align-items:center}
+.hero-copy h1{font-family:'Playfair Display', serif; font-size:36px; margin:0 0 12px; color:var(--accent)}
+.hero-copy p{color:var(--muted); margin:0 0 20px}
+.btn-primary{background:var(--accent); color:white; padding:12px 18px; border-radius:10px; text-decoration:none; display:inline-block}
+.btn-secondary{background:transparent; border:1px solid var(--accent); padding:10px 14px; border-radius:8px; color:var(--accent)}
+
+/* Products */
+.section-title{font-family:'Playfair Display', serif; margin:18px 0; color:var(--accent)}
+.product-grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:18px}
+.card{background:white; border-radius:12px; overflow:hidden; box-shadow:var(--shadow); display:flex; flex-direction:column}
+.card img{width:100%; height:200px; object-fit:cover}
+.card-body{padding:14px; display:flex; flex-direction:column; gap:8px; flex:1}
+.card .title{font-weight:600}
+.card .price{color:var(--accent); font-weight:700}
+.card .actions{margin-top:auto; display:flex; gap:8px}
+
+/* About / Contact */
+.section{padding:28px 0}
+
+/* Cart drawer */
+.cart-drawer{
+  position:fixed; right:20px; top:80px; width:360px; max-width:92vw; background:white; border-radius:12px; box-shadow:var(--shadow); display:flex; flex-direction:column;
+  transform:translateY(10px) scale(0.98); opacity:0; pointer-events:none; transition:all .22s; z-index:80;
+}
+.cart-drawer.open{transform:translateY(0) scale(1); opacity:1; pointer-events:auto}
+.cart-head{display:flex; align-items:center; justify-content:space-between; padding:18px; border-bottom:1px solid #f2f2f2}
+.cart-items{padding:12px; max-height:320px; overflow:auto}
+.cart-item{display:flex; gap:12px; align-items:center; padding:8px 0; border-bottom:1px dashed #f4f4f4}
+.cart-item img{width:54px; height:54px; object-fit:cover; border-radius:8px}
+.qty{display:flex; gap:6px; align-items:center}
+.cart-footer{padding:12px; border-top:1px solid #f2f2f2}
+
+/* Modal */
+.modal{position:fixed; inset:0; display:grid; place-items:center; background:rgba(0,0,0,0.4); opacity:0; pointer-events:none; transition:all .18s; z-index:90}
+.modal.open{opacity:1; pointer-events:auto}
+.modal-inner{background:white; width:94%; max-width:920px; border-radius:14px; padding:18px; position:relative; box-shadow:var(--shadow)}
+.modal-close{position:absolute; right:12px; top:12px; border:none; background:transparent; font-size:18px}
+
+.site-footer{display:flex; justify-content:space-between; padding:20px 0; color:var(--muted); font-size:14px; border-top:1px solid #eee}
+
+/* Responsive */
+@media (max-width:900px){
+  .hero-inner{grid-template-columns:1fr; text-align:center}
+  .nav{display:none}
+}
